@@ -3,23 +3,42 @@ import { api, getSettings, putSettings } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Download, Upload, Trash2, Shield } from "lucide-react";
+import { Download, Upload, Trash2, Shield, Brain } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+
+const AI_MODELS = [
+  { v: "anthropic|claude-sonnet-4-6", label: "Claude Sonnet 4.6 (Anthropic)" },
+  { v: "gemini|gemini-3.1-pro-preview", label: "Gemini 3.1 Pro (Google)" },
+  { v: "gemini|gemini-3-flash-preview", label: "Gemini 3 Flash (Google — szybki)" },
+  { v: "gemini|gemini-2.5-flash", label: "Gemini 2.5 Flash (Google)" },
+];
 
 export default function Settings({ theme, setTheme }) {
   const [pin, setPin] = useState({ current: "", new: "" });
   const [integ, setInteg] = useState({ notion: false, telegram: false });
+  const [aiModel, setAiModel] = useState("anthropic|claude-sonnet-4-6");
   const fileRef = useRef(null);
 
   useEffect(() => {
     api.get("/notion/status").then((r) => setInteg((s) => ({ ...s, notion: r.data.configured }))).catch(() => {});
     api.get("/telegram/status").then((r) => setInteg((s) => ({ ...s, telegram: r.data.configured }))).catch(() => {});
+    getSettings().then((s) => {
+      if (s?.ai_provider && s?.ai_model) setAiModel(`${s.ai_provider}|${s.ai_model}`);
+    });
   }, []);
+
+  const changeAiModel = async (v) => {
+    setAiModel(v);
+    const [ai_provider, ai_model] = v.split("|");
+    await putSettings({ ai_provider, ai_model });
+    toast.success("Model AI zmieniony");
+  };
 
   const exportData = async () => {
     const { data } = await api.get("/export");
@@ -63,6 +82,15 @@ export default function Settings({ theme, setTheme }) {
             <span className="text-sm text-muted-foreground">Tryb ciemny</span>
             <Switch data-testid="theme-toggle" checked={theme === "dark"} onCheckedChange={(v) => setTheme(v ? "dark" : "light")} />
           </div>
+        </Panel>
+
+        <Panel>
+          <h3 className="font-display font-semibold mb-3 flex items-center gap-2"><Brain className="w-4 h-4 text-[hsl(var(--cyan))]" /> Model AI</h3>
+          <p className="text-xs text-muted-foreground mb-2">Używany do podsumowań dnia i diagnosty (klucz Emergent).</p>
+          <Select value={aiModel} onValueChange={changeAiModel}>
+            <SelectTrigger data-testid="ai-model-select"><SelectValue /></SelectTrigger>
+            <SelectContent>{AI_MODELS.map((m) => <SelectItem key={m.v} value={m.v}>{m.label}</SelectItem>)}</SelectContent>
+          </Select>
         </Panel>
 
         <Panel>

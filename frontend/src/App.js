@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { api, seedIfEmpty } from "@/lib/store";
 import {
   LayoutDashboard, CalendarClock, CheckSquare, Flame, Wallet, LineChart,
-  Dumbbell, Utensils, Music2, Wrench, BookOpen, FileText, Settings as Cog, LogOut, Bell,
+  Dumbbell, Utensils, Music2, Wrench, BookOpen, FileText, Settings as Cog, LogOut, Bell, FolderOpen,
 } from "lucide-react";
 
 import Dashboard from "@/modules/Dashboard";
@@ -21,6 +21,7 @@ import Music from "@/modules/Music";
 import Workshop from "@/modules/Workshop";
 import Notes from "@/modules/Notes";
 import Reports from "@/modules/Reports";
+import Files from "@/modules/Files";
 import SettingsModule from "@/modules/Settings";
 
 const MOTTO = "Nie jestem tym, który ucieka od rzeczywistości. Jestem tym, który TWORZY rzeczywistość.";
@@ -37,6 +38,7 @@ const NAV = [
   ["music", "ERROR444", Music2],
   ["workshop", "Warsztat", Wrench],
   ["notes", "Baza wiedzy", BookOpen],
+  ["files", "Pliki", FolderOpen],
   ["reports", "Raporty", FileText],
   ["settings", "Ustawienia", Cog],
 ];
@@ -74,7 +76,7 @@ function PinScreen({ onOk }) {
 const MODULES = {
   dashboard: Dashboard, schedule: Schedule, tasks: Tasks, habits: Habits, finance: Finance,
   trading: Trading, training: Training, nutrition: Nutrition, music: Music, workshop: Workshop,
-  notes: Notes, reports: Reports, settings: SettingsModule,
+  notes: Notes, reports: Reports, files: Files, settings: SettingsModule,
 };
 
 export default function App() {

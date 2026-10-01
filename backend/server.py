@@ -1,11 +1,12 @@
 """SYSTEM DRSN33 / NeuroHACKING 444 — backend.
 Generyczne API kolekcji (bulk replace) + PIN + AI + Notion + Telegram.
 Single-user, dane trwałe w MongoDB."""
-from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Query, Header
+from fastapi.responses import Response
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-import os, logging
+import os, logging, uuid, requests
 from pathlib import Path
 from pydantic import BaseModel
 from typing import List, Any, Dict, Optional
@@ -18,6 +19,42 @@ load_dotenv(ROOT_DIR / '.env')
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
+
+# ---------- Object Storage (Emergent) ----------
+STORAGE_BASE = (os.environ.get("INTEGRATION_PROXY_URL") or "").strip() or "https://integrations.emergentagent.com"
+STORAGE_URL = STORAGE_BASE.rstrip("/") + "/objstore/api/v1/storage"
+EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY")
+APP_NAME = "drsn33"
+_storage_key = None
+
+def init_storage(force: bool = False):
+    global _storage_key
+    if _storage_key and not force:
+        return _storage_key
+    r = requests.post(f"{STORAGE_URL}/init", json={"emergent_key": EMERGENT_KEY}, timeout=30)
+    r.raise_for_status()
+    _storage_key = r.json()["storage_key"]
+    return _storage_key
+
+def put_object(path: str, data: bytes, content_type: str) -> dict:
+    key = init_storage()
+    r = requests.put(f"{STORAGE_URL}/objects/{path}",
+                     headers={"X-Storage-Key": key, "Content-Type": content_type}, data=data, timeout=120)
+    if r.status_code == 404:
+        key = init_storage(force=True)
+        r = requests.put(f"{STORAGE_URL}/objects/{path}",
+                         headers={"X-Storage-Key": key, "Content-Type": content_type}, data=data, timeout=120)
+    r.raise_for_status()
+    return r.json()
+
+def get_object(path: str):
+    key = init_storage()
+    r = requests.get(f"{STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": key}, timeout=60)
+    if r.status_code == 404:
+        key = init_storage(force=True)
+        r = requests.get(f"{STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": key}, timeout=60)
+    r.raise_for_status()
+    return r.content, r.headers.get("Content-Type", "application/octet-stream")
 
 app = FastAPI(title="DRSN33 Command Center")
 api = APIRouter(prefix="/api")
@@ -51,7 +88,8 @@ async def get_settings() -> dict:
     s = await db.settings.find_one({"_id": "app"})
     if not s:
         s = {"_id": "app", "pin": os.environ.get("DEFAULT_PIN", "4444"),
-             "theme": "dark", "accent": "dual", "telegram_enabled": False}
+             "theme": "dark", "accent": "dual", "telegram_enabled": False,
+             "ai_provider": "anthropic", "ai_model": "claude-sonnet-4-6"}
         await db.settings.insert_one(s)
     s.pop("_id", None)
     return s
@@ -143,7 +181,10 @@ async def _ai_call(system: str, user: str) -> str:
     key = os.environ.get("EMERGENT_LLM_KEY")
     if not key:
         raise HTTPException(500, "Brak EMERGENT_LLM_KEY")
-    chat = LlmChat(api_key=key, session_id="drsn33", system_message=system).with_model("anthropic", "claude-sonnet-4-6")
+    s = await get_settings()
+    provider = s.get("ai_provider", "anthropic")
+    model = s.get("ai_model", "claude-sonnet-4-6")
+    chat = LlmChat(api_key=key, session_id="drsn33", system_message=system).with_model(provider, model)
     resp = await chat.send_message(UserMessage(text=user))
     return resp
 
@@ -217,6 +258,47 @@ async def notion_push_tasks():
                 pushed += 1
     return {"ok": True, "pushed": pushed, "total": len(tasks)}
 
+# ---------- Pliki / Media (Object Storage) ----------
+@api.post("/upload")
+async def upload_file(file: UploadFile = File(...), tag: str = Query("")):
+    ext = file.filename.split(".")[-1].lower() if "." in file.filename else "bin"
+    fid = str(uuid.uuid4())
+    path = f"{APP_NAME}/uploads/{fid}.{ext}"
+    data = await file.read()
+    ct = file.content_type or "application/octet-stream"
+    try:
+        result = put_object(path, data, ct)
+    except Exception as e:
+        raise HTTPException(502, f"Upload nieudany: {e}")
+    doc = {
+        "id": fid, "storage_path": result["path"], "original_filename": file.filename,
+        "content_type": ct, "size": result.get("size", len(data)), "tag": tag,
+        "is_deleted": False, "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.files.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+@api.get("/files")
+async def list_files():
+    return await db.files.find({"is_deleted": False}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+
+@api.get("/files/{fid}/download")
+async def download_file(fid: str):
+    rec = await db.files.find_one({"id": fid, "is_deleted": False})
+    if not rec:
+        raise HTTPException(404, "Plik nie znaleziony")
+    try:
+        data, ct = get_object(rec["storage_path"])
+    except Exception as e:
+        raise HTTPException(502, f"Pobieranie nieudane: {e}")
+    return Response(content=data, media_type=rec.get("content_type", ct))
+
+@api.delete("/files/{fid}")
+async def delete_file(fid: str):
+    await db.files.update_one({"id": fid}, {"$set": {"is_deleted": True}})
+    return {"ok": True}
+
 app.include_router(api)
 app.add_middleware(
     CORSMiddleware, allow_credentials=True,
@@ -224,6 +306,15 @@ app.add_middleware(
     allow_methods=["*"], allow_headers=["*"],
 )
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+@app.on_event("startup")
+async def _startup():
+    try:
+        init_storage()
+        logger.info("Object storage initialized")
+    except Exception as e:
+        logger.error(f"Storage init failed: {e}")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

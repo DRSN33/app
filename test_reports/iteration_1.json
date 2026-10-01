@@ -1,0 +1,55 @@
+{
+  "summary": "First-finish smoke test for DRSN33/NeuroHACKING 444. Backend (14 endpoints spot-checked) and frontend (PIN gate + 5 modules) verified against public URL. All critical paths working including real Claude AI calls.",
+  "tested_scope": ["backend", "frontend", "auth", "integration"],
+  "passed": [
+    "GET /api/ root 200",
+    "POST /api/auth/verify pin=4444 -> {ok:true}; wrong pin -> {ok:false}",
+    "PUT/GET /api/data/tasks round-trip persists; _id not leaked",
+    "GET /api/settings returns settings without pin (pin_set:true)",
+    "POST /api/auth/pin with wrong current -> 400",
+    "GET /api/export returns all 14 collections + settings",
+    "GET /api/notion/status -> {configured:false}",
+    "GET /api/telegram/status -> {configured:false}",
+    "POST /api/telegram/send -> 400 graceful (not 500)",
+    "POST /api/notion/push/tasks -> 400 graceful (not 500)",
+    "POST /api/ai/diagnosta with VW P0401 -> real Claude response (EGR/P0401 content, ~1500 chars)",
+    "POST /api/ai/summary -> real Claude response in Polish (non-empty)",
+    "Frontend PIN login: pin-input + pin-submit accepts 4444 and reveals dashboard",
+    "Dashboard shows live clock (CZWARTEK 05:21 CET), KPIs, trading alerts (BTCUSDT/EURUSD), active projects (ERROR444 album 40%, trading A+ 65%), module shortcuts",
+    "Sidebar nav-* testids present for all 13 modules (dashboard, schedule, tasks, habits, finance, trading, training, nutrition, music, workshop, notes, reports, settings)",
+    "Tasks module: task-input + task-add accept input (no console errors)",
+    "Finance module: fin-amount=99 + fin-add adds expense; totals (WYDATKI 99 zł, BILANS -99 zł) update; pie chart renders",
+    "Trading module: trade-pair, trade-result, trade-add inputs present",
+    "Workshop module: diag-input + diag-ask present",
+    "Settings page: Eksport JSON, Import, Reset, PIN change (Obecny/Nowy + Zmień), Notion/Telegram integration status all present"
+  ],
+  "failed": [
+    {
+      "area": "frontend/tasks filters",
+      "issue": "tasks-view-today/overdue/noterm/all data-testids not present on filter buttons (filters render as plain Polish-text buttons: Dziś/Zaległe/Bez terminu/Wszystkie). Spec listed these testids but they are missing.",
+      "evidence": "page.evaluate querying [data-testid^=tasks-view-] returned empty array []",
+      "priority": "LOW"
+    },
+    {
+      "area": "frontend/nav naming vs spec",
+      "issue": "Spec referenced nav-trades, nav-repairs, nav-workouts, nav-songs but actual testids are nav-trading, nav-workshop, nav-training, nav-music. Not a bug; spec vs app naming mismatch. Document for future tests.",
+      "evidence": "nav IDs enumerated: ['nav-dashboard','nav-schedule','nav-tasks','nav-habits','nav-finance','nav-trading','nav-training','nav-nutrition','nav-music','nav-workshop','nav-notes','nav-reports','nav-settings']",
+      "priority": "LOW"
+    },
+    {
+      "area": "frontend/AI diagnosta UI rendering",
+      "issue": "After clicking diag-ask and waiting 25s, no AI response text (EGR/P0401/zawór) visible in body. Backend /api/ai/diagnosta works independently (verified via curl, returns full response). Possible UI render delay, loading state, or response not bound to visible element. Needs quick manual verification.",
+      "evidence": "body.inner_text() did not contain expected keywords after 25s wait; backend curl to same endpoint returns valid Claude response",
+      "priority": "MEDIUM"
+    }
+  ],
+  "action_items": [
+    "Verify workshop/diagnosta AI response renders in UI (check loading state and result container binding to /api/ai/diagnosta response). Backend confirmed working.",
+    "Optional: add data-testids to task filter buttons (tasks-view-today/overdue/noterm/all) if desired for future automated testing.",
+    "Credentials file /app/memory/test_credentials.md was not present; used PIN 4444 from problem statement which worked."
+  ],
+  "success_rate": {"backend": "100%", "frontend": "90%"},
+  "retest_needed": true,
+  "full_testing_deferred": true,
+  "test_credentials": "PIN 4444 verified working. /app/memory/test_credentials.md not found - flagged for creation."
+}
