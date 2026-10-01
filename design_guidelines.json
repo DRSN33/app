@@ -1,0 +1,156 @@
+{
+  "project_title": "SYSTEM DRSN33 / NeuroHACKING 444 — CENTRUM DOWODZENIA",
+  "project_type": "dashboard",
+  "archetype": "THE PERFORMANCE PRO / CYBERPUNK COMMAND CENTER (Tactical NeuroHACKING)",
+  "theme": {
+    "mode": "dark",
+    "background": "#0a0a0a",
+    "card_background": "#141414",
+    "card_elevated": "#1e1e1e",
+    "border_color": "rgba(255, 255, 255, 0.08)",
+    "border_glow_green": "rgba(34, 197, 94, 0.3)",
+    "border_glow_cyan": "rgba(6, 182, 212, 0.3)",
+    "primary_accent": "#22c55e",
+    "primary_accent_hsl": "142 71% 45%",
+    "secondary_accent": "#06b6d4",
+    "secondary_accent_hsl": "189 94% 43%",
+    "danger_accent": "#ef4444",
+    "warning_accent": "#f59e0b",
+    "text_primary": "#f8fafc",
+    "text_secondary": "#94a3b8",
+    "text_muted": "#64748b"
+  },
+  "brand_identity": {
+    "system_name": "SYSTEM DRSN33 / NeuroHACKING 444",
+    "subtitle": "CENTRUM DOWODZENIA",
+    "motto_polish": "Nie jestem tym, który ucieka od rzeczywistości. Jestem tym, który TWORZY rzeczywistość.",
+    "vibe": "High-tech tactical command center, sleek hacker aesthetic, dense data widgets, neon green/cyan indicators, precision UI."
+  },
+  "typography": {
+    "font_headings": "Barlow Condensed, Space Grotesk, system-ui, sans-serif",
+    "font_body": "Inter, system-ui, -apple-system, sans-serif",
+    "font_mono": "JetBrains Mono, Fira Code, Source Code Pro, monospace",
+    "text_hierarchy": {
+      "h1_hero": "text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight uppercase",
+      "h2_section": "text-xl sm:text-2xl font-bold tracking-tight text-slate-100 uppercase border-b border-emerald-500/20 pb-2 mb-4 flex items-center gap-2",
+      "h3_widget": "text-base sm:text-lg font-semibold tracking-wide text-emerald-400 uppercase",
+      "h4_card": "text-sm sm:text-base font-medium text-slate-200",
+      "body": "text-sm text-slate-300 leading-relaxed",
+      "mono_label": "font-mono text-xs uppercase tracking-wider text-cyan-400"
+    }
+  },
+  "layout_and_navigation": {
+    "desktop": "Left sticky sidebar (w-64) with active module indicator in glowing emerald green, sleek collapsible mode option, top header with CET live clock, motto banner, quick status indicators, and PIN lock trigger.",
+    "mobile": "Mobile-first responsive layout with bottom navigation bar (fixed bottom-0 z-50 h-16 bg-neutral-950/90 backdrop-blur-md border-t border-neutral-800) featuring key 5 shortcuts + 'More Modules' drawer.",
+    "containers": "Dense Bento Grid system (grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6). Each card must have p-4 sm:p-5 padding, 1px subtle border (#262626 or white/10), hover glow effect, and custom rounded corners (rounded-xl)."
+  },
+  "modules_guidelines": [
+    {
+      "id": "dashboard",
+      "name": "Dashboard / Centrum",
+      "description": "Central hub with live CET date/time clock, Polish header motto, 4 main KPI metric cards (Net Balance, Active Projects, Win Rate %, streak count), Trading alert widget, active project status pipeline, and quick module launcher matrix."
+    },
+    {
+      "id": "daily_schedule",
+      "name": "Daily Schedule / Plan Dnia",
+      "description": "Chronological timeline showing Killzones (London 09:00-12:00 CET / NY 14:00-17:00 CET highlighted in Cyan/Green), 'Spacer z Leo' (dog walk with picture card), deep work blocks, PPL training session."
+    },
+    {
+      "id": "tasks",
+      "name": "Tasks / Zadania (To-Do)",
+      "description": "Priority filtered task manager (P1-Critical Neon Red, P2-Important Cyan, P3-Normal Emerald), tag filtering (Office, Project, Car, Personal), checkable items with strike-through animations."
+    },
+    {
+      "id": "habits",
+      "name": "Habit Tracker / Nawyki",
+      "description": "Weekly habit grid (Mon-Sun) with streak counters, completion percentage progress bar, heatmaps for habit consistency (Cold shower, Deep reading, Clean diet, No sugar, Code/Trade practice)."
+    },
+    {
+      "id": "finance",
+      "name": "Finance / Finanse",
+      "description": "Income vs Expense tracking table with search/filter, quick transaction adder modal, total balance summary KPI, and interactive Expense category pie chart (Recharts/Chart.js)."
+    },
+    {
+      "id": "trading",
+      "name": "Trading Journal / Dziennik Tradingowy",
+      "description": "Detailed trades table (Symbol, Direction L/S, Entry, Exit, R:R, P&L PLN/USD, Outcome Win/Loss), 12-point A+ Execution Checklist modal/card, Position Size Calculator widget, TradingView read-only alert log feed, win-rate statistics."
+    },
+    {
+      "id": "training",
+      "name": "Training PPL / Trening PPL",
+      "description": "Weekly Push/Pull/Legs workout split matrix with target sets/reps, log completion toggles, and integrated interactive 15-min HIT Interval Timer with audio/visual flash alerts."
+    },
+    {
+      "id": "nutrition",
+      "name": "Nutrition / Dieta & Makro",
+      "description": "Daily Meal Plan timeline (Breakfast, Lunch, Pre-Workout, Dinner), Macro summary progress bars (Protein, Carbs, Fats, Kcal counter), and checkable interactive Shopping List."
+    },
+    {
+      "id": "music",
+      "name": "ERROR444 Music / Muzyka pipeline",
+      "description": "Track pipeline Kanban/Table board across stages: Idea → Lyrics → Beat → Mix → Master → Done. Includes song details drawer, tempo/key info, audio player snippet preview player simulation."
+    },
+    {
+      "id": "workshop",
+      "name": "Car Workshop / Warsztat Auto-Tech",
+      "description": "Vehicle specs & maintenance history logbook, searchable OBD-II diagnostic error code solver, Diagnosta AI diagnostic prompt wizard, and pending repair tasks list."
+    },
+    {
+      "id": "knowledge",
+      "name": "Knowledge Base / Notatnik & Prompty",
+      "description": "Searchable markdown note system with multi-tag filtering, AI prompt library cards, external bookmarks, code/command snippet copy buttons."
+    },
+    {
+      "id": "reports",
+      "name": "Reports / Raporty Wieczorne",
+      "description": "Daily evening review form (Mood slider 1-10, Sleep hours, Energy, Stress triggers, Daily expenses sum), automated daily summary generator, and weekly performance review graphs."
+    },
+    {
+      "id": "settings",
+      "name": "Settings / Ustawienia & Backup",
+      "description": "PIN code security lock management, JSON data export & import functionality, factory reset with confirmation modal, theme info, and local storage status summary."
+    }
+  ],
+  "image_urls": {
+    "dog_leo": {
+      "url": "https://images.unsplash.com/photo-1553882809-a4f57e59501d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHwxfHxnZXJtYW4lMjBzaGVwaGVyZCUyMGRvZyUyMGRhcmslMjBwb3J0cmFpdHxlbnwwfHx8fDE3OTA4MjQ0OTd8MA&ixlib=rb-4.1.0&q=85",
+      "category": "Daily Schedule / Dog Walk Leo Widget",
+      "description": "Dark portrait of German Shepherd dog for Leo walk schedule section"
+    },
+    "cyberpunk_bg": {
+      "url": "https://images.unsplash.com/photo-1680445530435-100993db6c67?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHw0fHxjeWJlcnB1bmslMjBkYXJrJTIwY29tbWFuZCUyMGNlbnRlciUyMGZ1dHVyaXN0aWMlMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc5MDgyNDQ5N3ww&ixlib=rb-4.1.0&q=85",
+      "category": "Header / Dashboard visual accent card",
+      "description": "Futuristic cyberpunk dark command center illuminated screen visual"
+    },
+    "workshop_car": {
+      "url": "https://images.unsplash.com/photo-1567808291548-fc3ee04dbcf0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w7NTY2NzV8MHwxfHNlYXJjaHwxfHxzcG9ydHMlMjBjYXIlMjBnYXJhZ2UlMjB3b3Jrc2hvcCUyMGRhcmslMjBuaWdodHxlbnwwfHx8fDE3OTA4MjQ0OTd8MA&ixlib=rb-4.1.0&q=85",
+      "category": "Car Workshop Module Banner",
+      "description": "Dark sports car garage workshop background image"
+    }
+  },
+  "component_guidelines": {
+    "buttons": "Use pill or sharp tactical buttons with border border-emerald-500/30 hover:bg-emerald-500/10 hover:border-emerald-400 active:scale-95 transition-all duration-200. Accent cyan buttons use border-cyan-500/30 hover:bg-cyan-500/10.",
+    "cards": "Card items must use bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-xl hover:border-neutral-700 transition-all shadow-lg p-4 sm:p-5 flex flex-col justify-between.",
+    "inputs": "Shadcn/UI inputs with dark surface bg-neutral-950 border-neutral-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-slate-100 placeholder:text-slate-600.",
+    "modals_and_dialogs": "Dark backdrop blur (bg-black/70 backdrop-blur-md) with crisp border border-neutral-800 rounded-2xl bg-neutral-900 shadow-2xl.",
+    "toasts": "Use Sonner toasts with custom dark theme, green indicator for success, cyan for info, red for error alerts."
+  },
+  "motion_and_effects": {
+    "framer_motion": "Animate module page transitions with subtle opacity and scale (opacity 0 -> 1, y: 10 -> 0).",
+    "micro_interactions": "Checkboxes trigger punchy scale bounce; timers pulsate cyan/green when active; killzones glow during live CET window.",
+    "ambient_glow": "Use subtle radial gradient backdrops `bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/10 via-neutral-950 to-black`."
+  },
+  "testing_and_accessibility": {
+    "data_testid_rule": "ALL interactive components, buttons, inputs, module tabs, task items, habit checkboxes, timer triggers, lock screen keypads MUST have distinct data-testid in kebab-case format (e.g. data-testid='module-nav-trading', data-testid='hit-timer-start-button', data-testid='pin-input-field').",
+    "contrast": "All text must maintain APCA high contrast standards on dark background (#0a0a0a / #141414)."
+  },
+  "instructions_to_main_agent": [
+    "Ensure the entire app defaults to dark mode with deep black (#0a0a0a) and rich dark charcoal (#141414) surfaces.",
+    "Incorporate BOTH accent colors specified by user: Green (#22c55e) as primary tactical accent, Cyan (#06b6d4) as secondary alert accent.",
+    "Prominently display the Polish header motto in the header / dashboard hero section: 'Nie jestem tym, który ucieka od rzeczywistości. Jestem tym, który TWORZY rzeczywistość.'",
+    "Build a robust PIN lock screen overlay or modal with 4-digit entry (e.g. default PIN 4444 or 1234) for command center authorization.",
+    "Implement all 13 modules with real state management in React (persisted via LocalStorage so user data stays intact).",
+    "Include export and import JSON features in Settings so the user can backup and restore their entire Second Brain database.",
+    "Use Lucide icons throughout and maintain high-density data visualization."
+  ]
+}
